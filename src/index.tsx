@@ -1,8 +1,15 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
+import * as React from 'react';
+import * as ReactDOM from 'react-dom';
 import './index.css';
 
-function Square(props) {
+/* -- Square -- */
+
+interface SquareProps {
+  value: String,
+  onClick: () => void
+}
+
+function Square(props: SquareProps): JSX.Element {
   return (
     <button className="square" onClick={props.onClick}>
       {props.value}
@@ -10,8 +17,14 @@ function Square(props) {
   );
 }
 
-class Board extends React.Component {
-  renderSquare(i) {
+/* -- Board -- */
+interface BoardProps {
+  squares: string[],
+  onClick: (i: number) => void,
+}
+
+class Board extends React.Component<BoardProps, {}> {
+  renderSquare(i: number) {
     return (
       <Square
         value={this.props.squares[i]} 
@@ -20,7 +33,7 @@ class Board extends React.Component {
     );
   }
   
-  renderRestart(label){
+  renderRestart(label: string){
     return (
       <button onClick={() => this.resetBoard()}>
         {label}
@@ -58,8 +71,15 @@ class Board extends React.Component {
   }
 }
 
-class Game extends React.Component { 
-  constructor(props) {
+/* -- Game -- */
+interface GameState {
+  history: { squares: string[] }[],
+  stepNumber: number,
+  xIsNext: boolean,
+}
+
+class Game extends React.Component<{}, GameState> { 
+  constructor(props: GameState) {
     super(props);
     this.state = {
       history: [{
@@ -70,7 +90,7 @@ class Game extends React.Component {
     }
   }
   
-  handleClick(i) {
+  handleClick(i: number) {
     const history = this.state.history.slice(0, this.state.stepNumber + 1);
     const current = history[history.length - 1];
     const squares = current.squares.slice();
@@ -89,7 +109,7 @@ class Game extends React.Component {
     });
   }
 
-  jumpTo(step){
+  jumpTo(step: number){
       this.setState({
           stepNumber: step,
           xIsNext: (step % 2) === 0,
@@ -136,7 +156,7 @@ class Game extends React.Component {
   }
 }
 
-function calculateWinner(squares) {
+function calculateWinner(squares: string[]): string | undefined {
     const lines = [
         [0, 1, 2],
         [3, 4, 5],
@@ -147,13 +167,15 @@ function calculateWinner(squares) {
         [0, 4, 8],
         [2, 4, 6],
     ];
+    
     for (let i = 0; i < lines.length; i++) {
         const [a, b, c] = lines[i];
         if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-        return squares[a];
+          return squares[a];
         }
     }
-    return null;
+
+  return undefined;
 }
 
 // ========================================
